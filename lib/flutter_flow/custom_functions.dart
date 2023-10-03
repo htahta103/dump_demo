@@ -35,12 +35,13 @@ String formatPrice(double? price) {
 }
 
 dynamic getCurrentCoinPrice(
-  List<double>? data,
+  List<dynamic>? data,
   int index,
 ) {
   // return data.toString();
   if (data == null || data.length <= 0) return '0';
-  var price = data[index];
+  var coin = data[index];
+  double price = coin["price"];
   int decimalPlaces = 0;
   String numberString = price.toStringAsFixed(20);
   int decimalIndex = numberString.indexOf('.');

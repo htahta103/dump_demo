@@ -18,24 +18,6 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
 
   dynamic dataCoinList;
 
-  List<double> prices = [];
-  void addToPrices(double item) => prices.add(item);
-  void removeFromPrices(double item) => prices.remove(item);
-  void removeAtIndexFromPrices(int index) => prices.removeAt(index);
-  void insertAtIndexInPrices(int index, double item) =>
-      prices.insert(index, item);
-  void updatePricesAtIndex(int index, Function(double) updateFn) =>
-      prices[index] = updateFn(prices[index]);
-
-  List<dynamic> priceChanges = [];
-  void addToPriceChanges(dynamic item) => priceChanges.add(item);
-  void removeFromPriceChanges(dynamic item) => priceChanges.remove(item);
-  void removeAtIndexFromPriceChanges(int index) => priceChanges.removeAt(index);
-  void insertAtIndexInPriceChanges(int index, dynamic item) =>
-      priceChanges.insert(index, item);
-  void updatePriceChangesAtIndex(int index, Function(dynamic) updateFn) =>
-      priceChanges[index] = updateFn(priceChanges[index]);
-
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();

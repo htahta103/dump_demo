@@ -44,18 +44,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               (_model.data?.jsonBody ?? ''),
               r'''$.coins''',
             );
-            _model.priceChanges = CoinStatsGroup.coinListCall
-                .price1h(
-                  (_model.data?.jsonBody ?? ''),
-                )!
-                .toList()
-                .cast<dynamic>();
-            _model.prices = CoinStatsGroup.coinListCall
-                .price(
-                  (_model.data?.jsonBody ?? ''),
-                )!
-                .toList()
-                .cast<double>();
           });
         },
         startImmediately: true,
@@ -220,11 +208,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                           ),
                                           child: Text(
                                             valueOrDefault<String>(
-                                              functions
-                                                  .getCurrentCoinPrice(
-                                                      _model.prices.toList(),
-                                                      coinIndex)
-                                                  ?.toString(),
+                                              getJsonField(
+                                                functions.getCurrentCoinPrice(
+                                                    _model.dataCoinList,
+                                                    coinIndex),
+                                                r'''$''',
+                                              ).toString(),
                                               '0',
                                             ),
                                             style: FlutterFlowTheme.of(context)
@@ -251,7 +240,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                 .secondaryBackground,
                                           ),
                                           child: Text(
-                                            '\$${functions.getCurrentCoinPrice(_model.prices.toList(), coinIndex)?.toString()}',
+                                            '\$${getJsonField(
+                                              functions.getCurrentCoinPrice(
+                                                  _model.dataCoinList,
+                                                  coinIndex),
+                                              r'''$''',
+                                            ).toString()}',
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
                                                 .override(
