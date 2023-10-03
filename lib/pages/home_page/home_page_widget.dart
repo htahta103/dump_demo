@@ -36,7 +36,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       _model.instantTimer = InstantTimer.periodic(
         duration: Duration(milliseconds: 5000),
         callback: (timer) async {
-          _model.data = await CoinStatsGroup.coinListCall.call();
+          _model.data = await CoinStatsGroup.coinListCall.call(
+            limit: 200,
+          );
           setState(() {
             _model.dataCoinList = getJsonField(
               (_model.data?.jsonBody ?? ''),
@@ -46,9 +48,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                 .price1h(
                   (_model.data?.jsonBody ?? ''),
                 )!
-                .cast<double>()
                 .toList()
-                .cast<double>();
+                .cast<dynamic>();
             _model.prices = CoinStatsGroup.coinListCall
                 .price(
                   (_model.data?.jsonBody ?? ''),
@@ -97,101 +98,92 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         ),
         body: SafeArea(
           top: true,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text(
-                _model.priceChanges.take(5).toList().length.toString(),
-                style: FlutterFlowTheme.of(context).bodyMedium,
+          child: RefreshIndicator(
+            onRefresh: () async {
+              setState(() => _model.listViewPagingController?.refresh());
+              await _model.waitForOnePageForListView();
+            },
+            child: PagedListView<ApiPagingParams, dynamic>(
+              pagingController: _model.setListViewController(
+                (nextPageMarker) => CoinStatsGroup.coinListCall.call(
+                  skip: nextPageMarker.nextPageNumber,
+                ),
               ),
-              RefreshIndicator(
-                onRefresh: () async {
-                  setState(() => _model.listViewPagingController?.refresh());
-                  await _model.waitForOnePageForListView();
-                },
-                child: PagedListView<ApiPagingParams, dynamic>(
-                  pagingController: _model.setListViewController(
-                    (nextPageMarker) => CoinStatsGroup.coinListCall.call(
-                      skip: nextPageMarker.nextPageNumber,
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              reverse: false,
+              scrollDirection: Axis.vertical,
+              builderDelegate: PagedChildBuilderDelegate<dynamic>(
+                // Customize what your widget looks like when it's loading the first page.
+                firstPageProgressIndicatorBuilder: (_) => Center(
+                  child: SizedBox(
+                    width: 40.0,
+                    height: 40.0,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        FlutterFlowTheme.of(context).primary,
+                      ),
                     ),
                   ),
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  reverse: false,
-                  scrollDirection: Axis.vertical,
-                  builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                    // Customize what your widget looks like when it's loading the first page.
-                    firstPageProgressIndicatorBuilder: (_) => Center(
-                      child: SizedBox(
-                        width: 40.0,
-                        height: 40.0,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            FlutterFlowTheme.of(context).primary,
-                          ),
-                        ),
+                ),
+                // Customize what your widget looks like when it's loading another page.
+                newPageProgressIndicatorBuilder: (_) => Center(
+                  child: SizedBox(
+                    width: 40.0,
+                    height: 40.0,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        FlutterFlowTheme.of(context).primary,
                       ),
                     ),
-                    // Customize what your widget looks like when it's loading another page.
-                    newPageProgressIndicatorBuilder: (_) => Center(
-                      child: SizedBox(
-                        width: 40.0,
-                        height: 40.0,
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            FlutterFlowTheme.of(context).primary,
-                          ),
-                        ),
-                      ),
-                    ),
+                  ),
+                ),
 
-                    itemBuilder: (context, _, coinIndex) {
-                      final coinItem =
-                          _model.listViewPagingController!.itemList![coinIndex];
-                      return Container(
-                        decoration: BoxDecoration(
-                          color:
-                              FlutterFlowTheme.of(context).secondaryBackground,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    8.0, 8.0, 16.0, 8.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
-                                  ),
-                                  child: Column(
+                itemBuilder: (context, _, coinIndex) {
+                  final coinItem =
+                      _model.listViewPagingController!.itemList![coinIndex];
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).secondaryBackground,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(
+                                8.0, 8.0, 16.0, 8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Row(
                                     mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryBackground,
-                                            ),
-                                            child: RichText(
-                                              textScaleFactor:
-                                                  MediaQuery.of(context)
-                                                      .textScaleFactor,
-                                              text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: getJsonField(
-                                                      coinItem,
-                                                      r'''$["symbol"]''',
-                                                    ).toString(),
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryBackground,
+                                        ),
+                                        child: RichText(
+                                          textScaleFactor:
+                                              MediaQuery.of(context)
+                                                  .textScaleFactor,
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: getJsonField(
+                                                  coinItem,
+                                                  r'''$["symbol"]''',
+                                                ).toString(),
+                                                style:
+                                                    FlutterFlowTheme.of(context)
                                                         .bodyLarge
                                                         .override(
                                                           fontFamily:
@@ -200,47 +192,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                           fontWeight:
                                                               FontWeight.w600,
                                                         ),
-                                                  ),
-                                                  TextSpan(
-                                                    text: '/USDT',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodySmall
-                                                        .override(
-                                                          fontFamily:
-                                                              'Readex Pro',
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryText,
-                                                        ),
-                                                  )
-                                                ],
-                                                style:
-                                                    FlutterFlowTheme.of(context)
-                                                        .bodyMedium,
                                               ),
-                                            ),
-                                          ),
-                                          Flexible(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryBackground,
-                                              ),
-                                              child: Text(
-                                                valueOrDefault<String>(
-                                                  functions
-                                                      .getCurrentCoinPrice(
-                                                          _model.prices
-                                                              .toList(),
-                                                          coinIndex)
-                                                      ?.toString(),
-                                                  '0',
-                                                ),
+                                              TextSpan(
+                                                text: '/USDT',
                                                 style: FlutterFlowTheme.of(
                                                         context)
-                                                    .bodyMedium
+                                                    .bodySmall
                                                     .override(
                                                       fontFamily: 'Readex Pro',
                                                       color:
@@ -248,84 +205,114 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                                   context)
                                                               .secondaryText,
                                                     ),
-                                              ),
-                                            ),
+                                              )
+                                            ],
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium,
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Flexible(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondaryBackground,
-                                              ),
-                                              child: Text(
-                                                '\$${functions.getCurrentCoinPrice(_model.prices.toList(), coinIndex)?.toString()}',
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .bodyMedium
-                                                    .override(
-                                                      fontFamily: 'Readex Pro',
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .secondaryText,
-                                                      fontSize: 12.0,
-                                                    ),
-                                              ),
-                                            ),
+                                      Flexible(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
                                           ),
-                                        ],
+                                          child: Text(
+                                            valueOrDefault<String>(
+                                              functions
+                                                  .getCurrentCoinPrice(
+                                                      _model.prices.toList(),
+                                                      coinIndex)
+                                                  ?.toString(),
+                                              '0',
+                                            ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Readex Pro',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                ),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  0.0, 0.0, 16.0, 0.0),
-                              child: Container(
-                                constraints: BoxConstraints(
-                                  minWidth: 60.0,
-                                  maxWidth: 60.0,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: functions.getPriceChange(
-                                              _model.dataCoinList,
-                                              false,
-                                              coinIndex)! >
-                                          0.0
-                                      ? Color(0xFF48A86E)
-                                      : FlutterFlowTheme.of(context).error,
-                                  borderRadius: BorderRadius.circular(4.0),
-                                ),
-                                alignment: AlignmentDirectional(0.00, 0.00),
-                                child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      8.0, 8.0, 8.0, 8.0),
-                                  child: Text(
-                                    '${functions.getPriceChange(_model.priceChanges.toList(), false, coinIndex)! > 0.0 ? '+' : '-'}',
-                                    style:
-                                        FlutterFlowTheme.of(context).titleSmall,
+                                  Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Flexible(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                          ),
+                                          child: Text(
+                                            '\$${functions.getCurrentCoinPrice(_model.prices.toList(), coinIndex)?.toString()}',
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Readex Pro',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryText,
+                                                  fontSize: 12.0,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(
+                              0.0, 0.0, 16.0, 0.0),
+                          child: Container(
+                            constraints: BoxConstraints(
+                              minWidth: 60.0,
+                              maxWidth: 60.0,
+                            ),
+                            decoration: BoxDecoration(
+                              color: functions.getPriceChange(getJsonField(
+                                        coinItem,
+                                        r'''$.priceChange1h''',
+                                      ))! >
+                                      0.0
+                                  ? Color(0xFF48A86E)
+                                  : FlutterFlowTheme.of(context).error,
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            alignment: AlignmentDirectional(0.00, 0.00),
+                            child: Padding(
+                              padding: EdgeInsetsDirectional.fromSTEB(
+                                  8.0, 8.0, 8.0, 8.0),
+                              child: Text(
+                                '${getJsonField(
+                                  coinItem,
+                                  r'''$.priceChange1h''',
+                                ).toString()}%',
+                                style: TextStyle(
+                                  color: FlutterFlowTheme.of(context)
+                                      .primaryBackground,
+                                  fontSize: 12.0,
                                 ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                ),
+                      ],
+                    ),
+                  );
+                },
               ),
-            ],
+            ),
           ),
         ),
       ),

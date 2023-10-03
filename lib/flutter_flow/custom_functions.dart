@@ -9,15 +9,9 @@ import 'lat_lng.dart';
 import 'place.dart';
 import 'uploaded_file.dart';
 
-double? getPriceChange(
-  List<double>? data,
-  bool? haveAbs,
-  int index,
-) {
-  if (data == null) return 0.0;
-  var price1h = data[index];
-
-  if (haveAbs == true) return (price1h).abs();
+double? getPriceChange(double? price) {
+  if (price == null) return 0.0;
+  var price1h = price;
   return (price1h);
 }
 

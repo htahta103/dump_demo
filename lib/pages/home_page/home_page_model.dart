@@ -27,13 +27,13 @@ class HomePageModel extends FlutterFlowModel<HomePageWidget> {
   void updatePricesAtIndex(int index, Function(double) updateFn) =>
       prices[index] = updateFn(prices[index]);
 
-  List<double> priceChanges = [];
-  void addToPriceChanges(double item) => priceChanges.add(item);
-  void removeFromPriceChanges(double item) => priceChanges.remove(item);
+  List<dynamic> priceChanges = [];
+  void addToPriceChanges(dynamic item) => priceChanges.add(item);
+  void removeFromPriceChanges(dynamic item) => priceChanges.remove(item);
   void removeAtIndexFromPriceChanges(int index) => priceChanges.removeAt(index);
-  void insertAtIndexInPriceChanges(int index, double item) =>
+  void insertAtIndexInPriceChanges(int index, dynamic item) =>
       priceChanges.insert(index, item);
-  void updatePriceChangesAtIndex(int index, Function(double) updateFn) =>
+  void updatePriceChangesAtIndex(int index, Function(dynamic) updateFn) =>
       priceChanges[index] = updateFn(priceChanges[index]);
 
   ///  State fields for stateful widgets in this page.
