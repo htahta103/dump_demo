@@ -9,7 +9,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'home_page_model.dart';
 export 'home_page_model.dart';
@@ -86,24 +85,14 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         ),
         body: SafeArea(
           top: true,
-          child: RefreshIndicator(
-            onRefresh: () async {
-              setState(() => _model.listViewPagingController?.refresh());
-              await _model.waitForOnePageForListView();
-            },
-            child: PagedListView<ApiPagingParams, dynamic>(
-              pagingController: _model.setListViewController(
-                (nextPageMarker) => CoinStatsGroup.coinListCall.call(
-                  skip: nextPageMarker.nextPageNumber,
-                ),
-              ),
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              reverse: false,
-              scrollDirection: Axis.vertical,
-              builderDelegate: PagedChildBuilderDelegate<dynamic>(
-                // Customize what your widget looks like when it's loading the first page.
-                firstPageProgressIndicatorBuilder: (_) => Center(
+          child: FutureBuilder<ApiCallResponse>(
+            future: (_model.apiRequestCompleter ??= Completer<ApiCallResponse>()
+                  ..complete(CoinStatsGroup.coinListCall.call()))
+                .future,
+            builder: (context, snapshot) {
+              // Customize what your widget looks like when it's loading.
+              if (!snapshot.hasData) {
+                return Center(
                   child: SizedBox(
                     width: 40.0,
                     height: 40.0,
@@ -113,200 +102,226 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       ),
                     ),
                   ),
-                ),
-                // Customize what your widget looks like when it's loading another page.
-                newPageProgressIndicatorBuilder: (_) => Center(
-                  child: SizedBox(
-                    width: 40.0,
-                    height: 40.0,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        FlutterFlowTheme.of(context).primary,
-                      ),
-                    ),
-                  ),
-                ),
-
-                itemBuilder: (context, _, coinIndex) {
-                  final coinItem =
-                      _model.listViewPagingController!.itemList![coinIndex];
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).secondaryBackground,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                8.0, 8.0, 16.0, 8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondaryBackground,
-                                        ),
-                                        child: RichText(
-                                          textScaleFactor:
-                                              MediaQuery.of(context)
-                                                  .textScaleFactor,
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: getJsonField(
-                                                  coinItem,
-                                                  r'''$["symbol"]''',
-                                                ).toString(),
-                                                style:
+                );
+              }
+              final listViewCoinListResponse = snapshot.data!;
+              return Builder(
+                builder: (context) {
+                  final coin = CoinStatsGroup.coinListCall
+                          .coin(
+                            listViewCoinListResponse.jsonBody,
+                          )
+                          ?.toList() ??
+                      [];
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      setState(() => _model.apiRequestCompleter = null);
+                      await _model.waitForApiRequestCompleted();
+                    },
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemCount: coin.length,
+                      itemBuilder: (context, coinIndex) {
+                        final coinItem = coin[coinIndex];
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      8.0, 8.0, 16.0, 8.0),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryBackground,
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color:
                                                     FlutterFlowTheme.of(context)
-                                                        .bodyLarge
-                                                        .override(
-                                                          fontFamily:
-                                                              'Readex Pro',
-                                                          fontSize: 16.0,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
+                                                        .secondaryBackground,
                                               ),
-                                              TextSpan(
-                                                text: '/USDT',
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .bodySmall
-                                                    .override(
-                                                      fontFamily: 'Readex Pro',
-                                                      color:
+                                              child: RichText(
+                                                textScaleFactor:
+                                                    MediaQuery.of(context)
+                                                        .textScaleFactor,
+                                                text: TextSpan(
+                                                  children: [
+                                                    TextSpan(
+                                                      text: getJsonField(
+                                                        coinItem,
+                                                        r'''$["symbol"]''',
+                                                      ).toString(),
+                                                      style: FlutterFlowTheme
+                                                              .of(context)
+                                                          .bodyLarge
+                                                          .override(
+                                                            fontFamily:
+                                                                'Readex Pro',
+                                                            fontSize: 16.0,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                    ),
+                                                    TextSpan(
+                                                      text: '/USDT',
+                                                      style:
                                                           FlutterFlowTheme.of(
                                                                   context)
-                                                              .secondaryText,
-                                                    ),
-                                              )
-                                            ],
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium,
-                                          ),
-                                        ),
-                                      ),
-                                      Flexible(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                          ),
-                                          child: Text(
-                                            valueOrDefault<String>(
-                                              getJsonField(
-                                                functions.getCurrentCoinPrice(
-                                                    _model.dataCoinList,
-                                                    coinIndex),
-                                                r'''$''',
-                                              ).toString(),
-                                              '0',
+                                                              .bodySmall
+                                                              .override(
+                                                                fontFamily:
+                                                                    'Readex Pro',
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondaryText,
+                                                              ),
+                                                    )
+                                                  ],
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium,
+                                                ),
+                                              ),
                                             ),
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Readex Pro',
+                                            Flexible(
+                                              child: Container(
+                                                decoration: BoxDecoration(
                                                   color: FlutterFlowTheme.of(
                                                           context)
-                                                      .secondaryText,
+                                                      .secondaryBackground,
                                                 ),
-                                          ),
+                                                child: Text(
+                                                  valueOrDefault<String>(
+                                                    getJsonField(
+                                                      functions
+                                                          .getCurrentCoinPrice(
+                                                              _model
+                                                                  .dataCoinList,
+                                                              coinIndex),
+                                                      r'''$''',
+                                                    ).toString(),
+                                                    '0',
+                                                  ),
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Readex Pro',
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Flexible(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                          ),
-                                          child: Text(
-                                            '\$${getJsonField(
-                                              functions.getCurrentCoinPrice(
-                                                  _model.dataCoinList,
-                                                  coinIndex),
-                                              r'''$''',
-                                            ).toString()}',
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Readex Pro',
+                                        Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Flexible(
+                                              child: Container(
+                                                decoration: BoxDecoration(
                                                   color: FlutterFlowTheme.of(
                                                           context)
-                                                      .secondaryText,
-                                                  fontSize: 12.0,
+                                                      .secondaryBackground,
                                                 ),
-                                          ),
+                                                child: Text(
+                                                  '\$${getJsonField(
+                                                    functions
+                                                        .getCurrentCoinPrice(
+                                                            _model.dataCoinList,
+                                                            coinIndex),
+                                                    r'''$''',
+                                                  ).toString()}',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Readex Pro',
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
+                                                        fontSize: 12.0,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              0.0, 0.0, 16.0, 0.0),
-                          child: Container(
-                            constraints: BoxConstraints(
-                              minWidth: 60.0,
-                              maxWidth: 60.0,
-                            ),
-                            decoration: BoxDecoration(
-                              color: functions.getPriceChange(getJsonField(
-                                        coinItem,
-                                        r'''$.priceChange1h''',
-                                      ))! >
-                                      0.0
-                                  ? Color(0xFF48A86E)
-                                  : FlutterFlowTheme.of(context).error,
-                              borderRadius: BorderRadius.circular(4.0),
-                            ),
-                            alignment: AlignmentDirectional(0.00, 0.00),
-                            child: Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
-                                  8.0, 8.0, 8.0, 8.0),
-                              child: Text(
-                                '${getJsonField(
-                                  coinItem,
-                                  r'''$.priceChange1h''',
-                                ).toString()}%',
-                                style: TextStyle(
-                                  color: FlutterFlowTheme.of(context)
-                                      .primaryBackground,
-                                  fontSize: 12.0,
                                 ),
                               ),
-                            ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 0.0, 16.0, 0.0),
+                                child: Container(
+                                  constraints: BoxConstraints(
+                                    minWidth: 60.0,
+                                    maxWidth: 60.0,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: functions
+                                                .getPriceChange(getJsonField(
+                                              coinItem,
+                                              r'''$.priceChange1h''',
+                                            ))! >
+                                            0.0
+                                        ? Color(0xFF48A86E)
+                                        : FlutterFlowTheme.of(context).error,
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                  alignment: AlignmentDirectional(0.00, 0.00),
+                                  child: Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        8.0, 8.0, 8.0, 8.0),
+                                    child: Text(
+                                      '${getJsonField(
+                                        coinItem,
+                                        r'''$.priceChange1h''',
+                                      ).toString()}%',
+                                      style: TextStyle(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryBackground,
+                                        fontSize: 12.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   );
                 },
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),

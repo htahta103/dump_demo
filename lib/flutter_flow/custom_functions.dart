@@ -9,10 +9,8 @@ import 'lat_lng.dart';
 import 'place.dart';
 import 'uploaded_file.dart';
 
-double? getPriceChange(double? price) {
-  if (price == null) return 0.0;
-  var price1h = price;
-  return (price1h);
+double? getPriceChange(dynamic price) {
+  return double.tryParse(price.toString());
 }
 
 String formatPrice(double? price) {
@@ -41,7 +39,7 @@ dynamic getCurrentCoinPrice(
   // return data.toString();
   if (data == null || data.length <= 0) return '0';
   var coin = data[index];
-  double price = coin["price"];
+  var price = coin["price"];
   int decimalPlaces = 0;
   String numberString = price.toStringAsFixed(20);
   int decimalIndex = numberString.indexOf('.');
