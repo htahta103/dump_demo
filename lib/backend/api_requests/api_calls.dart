@@ -154,6 +154,15 @@ class GetNewsCall {
 
 /// End CoinStats Group Code
 
+/// Start Binance Endpoints Group Code
+
+class BinanceEndpointsGroup {
+  static String baseUrl = 'https://api1.binance.com';
+  static Map<String, String> headers = {};
+}
+
+/// End Binance Endpoints Group Code
+
 class ApiPagingParams {
   int nextPageNumber = 0;
   int numItems = 0;
