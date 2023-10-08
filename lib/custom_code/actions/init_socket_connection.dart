@@ -7,73 +7,27 @@ import 'package:flutter/material.dart';
 // Begin custom action code
 // DO NOT REMOVE OR MODIFY THE CODE ABOVE!
 
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'dart:convert';
 
 Future initSocketConnection() async {
   print('Connecting to socket');
-  IO.Socket socket = IO.io('wss://stream.binance.com:9443/ws');
-
-  FFAppState().chartData = socket;
-
-  // socket.connect();
-
-  socket.onConnect((_) {
-    print('connected to socket');
-  });
-
-  // I'm using 3 listeners so adjust to your use case
-
-  socket.on('system_message', (message) {
-    print('*** system_message: $message');
-  });
-
-  socket.on('stream', (message) {
-    print("*** stream: $message");
-    // addToChatHistory(message, callbackAction);
-  });
-
-  socket.on('chat', (message) {
-    print("*** chat: $message");
+  FFAppState().chartChannel = WebSocketChannel.connect(
+    Uri.parse('wss://stream.binance.com:9443/ws'),
+  );
+  FFAppState().chartChannel.sink.add(
+        jsonEncode(
+          {
+            "method": "SUBSCRIBE",
+            "params": ["btcusdt@aggTrade"],
+            "id": 1
+          },
+        ),
+      );
+  FFAppState().chartChannel.stream.listen((message) {
+    print('===== ' + message);
   });
 }
 
-void addToChatHistory(Map<String, dynamic> message, callbackAction) {
-  IncomingMessage incomingMessage = IncomingMessage.fromJson(message);
-  // My stream msg body has {token: string/null, complete: true/false}, so adjust to your msg body.
-
-  if (incomingMessage.token != null) {
-    String? token = incomingMessage.token;
-    // FFAppState().updateChatHistoryAtIndex(
-    //   FFAppState().chatHistory.length - 1,
-    //   (e) {
-    //     return e..content = "${e.content}$token";
-    //   },
-    // );
-  }
-
-  callbackAction();
-}
-
-class IncomingMessage {
-  String? token;
-  bool? complete;
-
-  IncomingMessage({this.token, this.complete});
-
-  IncomingMessage.fromJson(Map<String, dynamic> json) {
-    token = json['token'];
-    complete = json['complete'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    if (token != null) {
-      data['token'] = this.token;
-    }
-    data['complete'] = this.complete;
-    return data;
-  }
-}
 // Set your action name, define your arguments and return parameter,
 // and then add the boilerplate code using the button on the right!

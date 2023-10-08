@@ -43,6 +43,12 @@ class FFAppState extends ChangeNotifier {
   set chartData(dynamic _value) {
     _chartData = _value;
   }
+
+  dynamic _chartChannel;
+  dynamic get chartChannel => _chartChannel;
+  set chartChannel(dynamic _value) {
+    _chartChannel = _value;
+  }
 }
 
 LatLng? _latLngFromString(String? val) {
