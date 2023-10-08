@@ -7,24 +7,16 @@ import 'package:flutter/material.dart';
 // Begin custom action code
 // DO NOT REMOVE OR MODIFY THE CODE ABOVE!
 
-// import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'dart:convert';
 
-Future initSocketConnection(
-  String endpoint,
-  String userId,
-  Future<dynamic> Function() callbackAction,
-) async {
+Future initSocketConnection() async {
   print('Connecting to socket');
-  var socket;
-  // IO.Socket socket = IO.io(
-  //     endpoint,
-  //     IO.OptionBuilder().setTransports(['websocket']).setExtraHeaders(
-  //         {'user_id': userId}).build());
+  IO.Socket socket = IO.io('wss://stream.binance.com:9443/ws');
 
-  // FFAppState().globalSocket = socket;
+  FFAppState().chartData = socket;
 
-  socket.connect();
+  // socket.connect();
 
   socket.onConnect((_) {
     print('connected to socket');
@@ -38,7 +30,7 @@ Future initSocketConnection(
 
   socket.on('stream', (message) {
     print("*** stream: $message");
-    addToChatHistory(message, callbackAction);
+    // addToChatHistory(message, callbackAction);
   });
 
   socket.on('chat', (message) {

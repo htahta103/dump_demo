@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'backend/api_requests/api_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'flutter_flow/flutter_flow_util.dart';
+import 'dart:convert';
 
 class FFAppState extends ChangeNotifier {
   static FFAppState _instance = FFAppState._internal();
@@ -35,6 +36,12 @@ class FFAppState extends ChangeNotifier {
   set currentUnit(String _value) {
     _currentUnit = _value;
     prefs.setString('ff_currentUnit', _value);
+  }
+
+  dynamic _chartData;
+  dynamic get chartData => _chartData;
+  set chartData(dynamic _value) {
+    _chartData = _value;
   }
 }
 
