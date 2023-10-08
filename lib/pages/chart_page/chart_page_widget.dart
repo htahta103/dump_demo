@@ -1,3 +1,4 @@
+import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -30,6 +31,13 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await actions.initSocketConnection();
+      _model.apiResult9zg =
+          await BinanceEndpointsGroup.getCandlesDataCall.call();
+      if ((_model.apiResult9zg?.succeeded ?? true)) {
+        setState(() {
+          FFAppState().chartData = (_model.apiResult9zg?.jsonBody ?? '');
+        });
+      }
     });
   }
 
@@ -81,6 +89,7 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
                 child: custom_widgets.Chart(
                   width: MediaQuery.sizeOf(context).width * 1.0,
                   height: 300.0,
+                  data: FFAppState().chartData,
                 ),
               ),
               FFButtonWidget(

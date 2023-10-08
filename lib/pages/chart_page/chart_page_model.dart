@@ -1,3 +1,4 @@
+import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -24,6 +25,8 @@ class ChartPageModel extends FlutterFlowModel<ChartPageWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
+  // Stores action output result for [Backend Call - API (getCandlesData)] action in ChartPage widget.
+  ApiCallResponse? apiResult9zg;
 
   /// Initialization and disposal methods.
 

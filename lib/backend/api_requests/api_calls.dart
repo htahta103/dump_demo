@@ -159,6 +159,27 @@ class GetNewsCall {
 class BinanceEndpointsGroup {
   static String baseUrl = 'https://api1.binance.com';
   static Map<String, String> headers = {};
+  static GetCandlesDataCall getCandlesDataCall = GetCandlesDataCall();
+}
+
+class GetCandlesDataCall {
+  Future<ApiCallResponse> call({
+    String? symbol = 'BTCUSDT',
+    String? interval = '1h',
+  }) {
+    return ApiManager.instance.makeApiCall(
+      callName: 'getCandlesData',
+      apiUrl:
+          '${BinanceEndpointsGroup.baseUrl}/api/v3/klines?symbol=${symbol}&interval=${interval}',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+    );
+  }
 }
 
 /// End Binance Endpoints Group Code
