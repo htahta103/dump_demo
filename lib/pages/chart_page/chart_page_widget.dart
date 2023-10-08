@@ -2,6 +2,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/custom_code/actions/index.dart' as actions;
+import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -53,22 +54,13 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
         appBar: AppBar(
           backgroundColor: FlutterFlowTheme.of(context).primary,
           automaticallyImplyLeading: false,
-          title: InkWell(
-            splashColor: Colors.transparent,
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            onTap: () async {
-              await actions.closeChannel();
-            },
-            child: Text(
-              'Page Title',
-              style: FlutterFlowTheme.of(context).headlineMedium.override(
-                    fontFamily: 'Outfit',
-                    color: Colors.white,
-                    fontSize: 22.0,
-                  ),
-            ),
+          title: Text(
+            'Page Title',
+            style: FlutterFlowTheme.of(context).headlineMedium.override(
+                  fontFamily: 'Outfit',
+                  color: Colors.white,
+                  fontSize: 22.0,
+                ),
           ),
           actions: [],
           centerTitle: false,
@@ -83,9 +75,17 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
                 _model.chartData.length.toString(),
                 style: FlutterFlowTheme.of(context).bodyMedium,
               ),
+              Container(
+                width: MediaQuery.sizeOf(context).width * 1.0,
+                height: 300.0,
+                child: custom_widgets.Chart(
+                  width: MediaQuery.sizeOf(context).width * 1.0,
+                  height: 300.0,
+                ),
+              ),
               FFButtonWidget(
-                onPressed: () {
-                  print('Button pressed ...');
+                onPressed: () async {
+                  await actions.closeChannel();
                 },
                 text: 'Button',
                 options: FFButtonOptions(
