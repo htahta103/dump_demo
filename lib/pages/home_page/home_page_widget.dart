@@ -48,6 +48,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         startImmediately: true,
       );
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override

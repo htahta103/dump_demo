@@ -1,11 +1,9 @@
-import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/custom_code/actions/index.dart' as actions;
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'chart_page_model.dart';
@@ -28,17 +26,7 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
     super.initState();
     _model = createModel(context, () => ChartPageModel());
 
-    // On page load action.
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      await actions.initSocketConnection();
-      _model.apiResult9zg =
-          await BinanceEndpointsGroup.getCandlesDataCall.call();
-      if ((_model.apiResult9zg?.succeeded ?? true)) {
-        setState(() {
-          FFAppState().chartData = (_model.apiResult9zg?.jsonBody ?? '');
-        });
-      }
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
