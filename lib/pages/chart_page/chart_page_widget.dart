@@ -218,7 +218,7 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
                     FFButtonWidget(
                       onPressed: () async {
                         setState(() {
-                          _model.showIntervalsMenu = true;
+                          _model.notShowIntervalsMenu = true;
                         });
                       },
                       text: 'More',
@@ -271,25 +271,36 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
                               interval: _model.currentInterval,
                             ),
                           ),
-                          if (_model.showIntervalsMenu == true)
-                            Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Color(0x2457636C),
-                              ),
-                              child: Align(
-                                alignment: AlignmentDirectional(0.00, -1.00),
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryBackground,
-                                    shape: BoxShape.rectangle,
-                                  ),
-                                ).animateOnPageLoad(animationsMap[
-                                    'containerOnPageLoadAnimation2']!),
+                          if (_model.notShowIntervalsMenu == false)
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                setState(() {
+                                  _model.notShowIntervalsMenu = true;
+                                });
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0x2457636C),
+                                ),
+                                child: Align(
+                                  alignment: AlignmentDirectional(0.00, -1.00),
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 100.0,
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryBackground,
+                                      shape: BoxShape.rectangle,
+                                    ),
+                                  ).animateOnPageLoad(animationsMap[
+                                      'containerOnPageLoadAnimation2']!),
+                                ),
                               ),
                             ).animateOnPageLoad(animationsMap[
                                 'containerOnPageLoadAnimation1']!),

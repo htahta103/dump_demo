@@ -24,7 +24,7 @@ class ChartPageModel extends FlutterFlowModel<ChartPageWidget> {
 
   String currentInterval = '1m';
 
-  bool showIntervalsMenu = true;
+  bool notShowIntervalsMenu = true;
 
   ///  State fields for stateful widgets in this page.
 
