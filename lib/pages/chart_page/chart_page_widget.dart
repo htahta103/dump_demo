@@ -67,9 +67,112 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Text(
-                _model.chartData.length.toString(),
-                style: FlutterFlowTheme.of(context).bodyMedium,
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  FFButtonWidget(
+                    onPressed: () async {
+                      if (_model.currentInterval == '1m') {
+                        return;
+                      }
+
+                      setState(() {
+                        _model.currentInterval = '1m';
+                      });
+                    },
+                    text: '1m',
+                    options: FFButtonOptions(
+                      height: 24.0,
+                      padding:
+                          EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
+                      iconPadding:
+                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                      color: Color(0x004B39EF),
+                      textStyle: FlutterFlowTheme.of(context)
+                          .titleSmall
+                          .override(
+                            fontFamily: 'Readex Pro',
+                            color: FlutterFlowTheme.of(context).secondaryText,
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w300,
+                          ),
+                      elevation: 0.0,
+                      borderSide: BorderSide(
+                        color: Colors.transparent,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  FFButtonWidget(
+                    onPressed: () async {
+                      if (_model.currentInterval == '1m') {
+                        return;
+                      }
+
+                      setState(() {
+                        _model.currentInterval = '15m';
+                      });
+                    },
+                    text: '15m',
+                    options: FFButtonOptions(
+                      height: 24.0,
+                      padding:
+                          EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
+                      iconPadding:
+                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                      color: Color(0x004B39EF),
+                      textStyle: FlutterFlowTheme.of(context)
+                          .titleSmall
+                          .override(
+                            fontFamily: 'Readex Pro',
+                            color: FlutterFlowTheme.of(context).secondaryText,
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w300,
+                          ),
+                      elevation: 0.0,
+                      borderSide: BorderSide(
+                        color: Colors.transparent,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  FFButtonWidget(
+                    onPressed: () async {
+                      if (_model.currentInterval == '1m') {
+                        return;
+                      }
+
+                      setState(() {
+                        _model.currentInterval = '1h';
+                      });
+                    },
+                    text: '1h',
+                    options: FFButtonOptions(
+                      height: 24.0,
+                      padding:
+                          EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
+                      iconPadding:
+                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                      color: Color(0x004B39EF),
+                      textStyle: FlutterFlowTheme.of(context)
+                          .titleSmall
+                          .override(
+                            fontFamily: 'Readex Pro',
+                            color: FlutterFlowTheme.of(context).secondaryText,
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w300,
+                          ),
+                      elevation: 0.0,
+                      borderSide: BorderSide(
+                        color: Colors.transparent,
+                        width: 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 width: MediaQuery.sizeOf(context).width * 1.0,
@@ -77,7 +180,7 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
                 child: custom_widgets.Chart(
                   width: MediaQuery.sizeOf(context).width * 1.0,
                   height: 300.0,
-                  data: FFAppState().chartData,
+                  interval: _model.currentInterval,
                 ),
               ),
               FFButtonWidget(
@@ -100,7 +203,7 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
                     color: Colors.transparent,
                     width: 1.0,
                   ),
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(0.0),
                 ),
               ),
             ],

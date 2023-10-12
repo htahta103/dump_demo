@@ -20,19 +20,18 @@ class Chart extends StatefulWidget {
     Key? key,
     this.width,
     this.height,
-    this.data,
+    required this.interval,
   }) : super(key: key);
 
   final double? width;
   final double? height;
-  final dynamic data;
+  final String interval;
 
   @override
   _ChartState createState() => _ChartState();
 }
 
 class _ChartState extends State<Chart> {
-  String currentInterval = "1m";
   List<Candle> candles = [];
   void updateCandlesFromSnapshot(newCandle) {
     if (candles.isEmpty) return;
@@ -80,8 +79,7 @@ class _ChartState extends State<Chart> {
         print(message);
         updateCandlesFromSnapshot(message);
       });
-
-      var response = await callApi('BTCUSDT', "1m");
+      var response = await callApi('BTCUSDT', widget.interval);
       if ((response?.length > 0)) {
         setState(() {
           candles = mapData(response);
@@ -90,12 +88,20 @@ class _ChartState extends State<Chart> {
     });
   }
 
+  // @override
+  // void didUpdateWidget(covariant Chart oldWidget)  {
+  //   super.didUpdateWidget(oldWidget);
+
+  //   if(oldWidget.interval != widget.interval){
+  //      await fetchChartData()
+  //   }
+
+  // }
+
   @override
   Widget build(BuildContext context) {
-    print(widget.data);
-
     return Candlesticks(
-      key: Key('btc' + currentInterval),
+      key: Key('btc' + widget.interval),
       // indicators: indicators,
       candles: candles,
       // onLoadMoreCandles: loadMoreCandles,

@@ -20,6 +20,8 @@ class ChartPageModel extends FlutterFlowModel<ChartPageWidget> {
   void updateChartDataAtIndex(int index, Function(dynamic) updateFn) =>
       chartData[index] = updateFn(chartData[index]);
 
+  String currentInterval = '1m';
+
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
