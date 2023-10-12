@@ -25,7 +25,7 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   final animationsMap = {
-    'containerOnActionTriggerAnimation1': AnimationInfo(
+    'containerOnActionTriggerAnimation': AnimationInfo(
       trigger: AnimationTrigger.onActionTrigger,
       applyInitialState: true,
       effects: [
@@ -38,9 +38,21 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
         ),
       ],
     ),
-    'containerOnActionTriggerAnimation2': AnimationInfo(
-      trigger: AnimationTrigger.onActionTrigger,
+    'containerOnPageLoadAnimation1': AnimationInfo(
+      trigger: AnimationTrigger.onPageLoad,
       applyInitialState: true,
+      effects: [
+        FadeEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 300.ms,
+          begin: 0.0,
+          end: 1.0,
+        ),
+      ],
+    ),
+    'containerOnPageLoadAnimation2': AnimationInfo(
+      trigger: AnimationTrigger.onPageLoad,
       effects: [
         MoveEffect(
           curve: Curves.easeInOut,
@@ -297,15 +309,16 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
                                         .primaryBackground,
                                     shape: BoxShape.rectangle,
                                   ),
-                                ).animateOnActionTrigger(
-                                  animationsMap[
-                                      'containerOnActionTriggerAnimation2']!,
-                                ),
+                                ).animateOnPageLoad(animationsMap[
+                                    'containerOnPageLoadAnimation2']!),
                               ),
-                            ).animateOnActionTrigger(
-                              animationsMap[
-                                  'containerOnActionTriggerAnimation1']!,
-                            ),
+                            )
+                                .animateOnPageLoad(animationsMap[
+                                    'containerOnPageLoadAnimation1']!)
+                                .animateOnActionTrigger(
+                                  animationsMap[
+                                      'containerOnActionTriggerAnimation']!,
+                                ),
                         ],
                       ),
                     ),
