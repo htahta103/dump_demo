@@ -25,22 +25,8 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   final animationsMap = {
-    'containerOnActionTriggerAnimation': AnimationInfo(
-      trigger: AnimationTrigger.onActionTrigger,
-      applyInitialState: true,
-      effects: [
-        FadeEffect(
-          curve: Curves.easeInOut,
-          delay: 0.ms,
-          duration: 300.ms,
-          begin: 0.0,
-          end: 1.0,
-        ),
-      ],
-    ),
     'containerOnPageLoadAnimation1': AnimationInfo(
       trigger: AnimationTrigger.onPageLoad,
-      applyInitialState: true,
       effects: [
         FadeEffect(
           curve: Curves.easeInOut,
@@ -74,13 +60,6 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       _model.currentInterval = false.toString();
     });
-
-    setupAnimations(
-      animationsMap.values.where((anim) =>
-          anim.trigger == AnimationTrigger.onActionTrigger ||
-          !anim.applyInitialState),
-      this,
-    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
@@ -312,13 +291,8 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
                                 ).animateOnPageLoad(animationsMap[
                                     'containerOnPageLoadAnimation2']!),
                               ),
-                            )
-                                .animateOnPageLoad(animationsMap[
-                                    'containerOnPageLoadAnimation1']!)
-                                .animateOnActionTrigger(
-                                  animationsMap[
-                                      'containerOnActionTriggerAnimation']!,
-                                ),
+                            ).animateOnPageLoad(animationsMap[
+                                'containerOnPageLoadAnimation1']!),
                         ],
                       ),
                     ),
