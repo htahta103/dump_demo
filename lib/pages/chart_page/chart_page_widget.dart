@@ -60,9 +60,7 @@ class _ChartPageWidgetState extends State<ChartPageWidget>
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      setState(() {
-        _model.currentInterval = false.toString();
-      });
+      _model.currentInterval = false.toString();
     });
 
     setupAnimations(
