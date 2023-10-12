@@ -14,6 +14,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/status.dart' as status;
 
 class Chart extends StatefulWidget {
   const Chart({
@@ -58,45 +59,58 @@ class _ChartState extends State<Chart> {
     }
   }
 
+  void initChanel() {
+    FFAppState().chartChannel = WebSocketChannel.connect(
+      Uri.parse('wss://stream.binance.com:9443/ws'),
+    );
+    FFAppState().chartChannel.sink.add(
+          jsonEncode(
+            {
+              "method": "SUBSCRIBE",
+              "params": ["btcusdt@kline_" + widget.interval],
+              "id": 1
+            },
+          ),
+        );
+    FFAppState().chartChannel.stream.listen((message) {
+      print(message);
+      updateCandlesFromSnapshot(message);
+    });
+  }
+
+  Future<void> fetchData() async {
+    var response = await callApi('BTCUSDT', widget.interval);
+    if ((response?.length > 0)) {
+      setState(() {
+        candles = mapData(response);
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     print('===== Siu');
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      FFAppState().chartChannel = WebSocketChannel.connect(
-        Uri.parse('wss://stream.binance.com:9443/ws'),
-      );
-      FFAppState().chartChannel.sink.add(
-            jsonEncode(
-              {
-                "method": "SUBSCRIBE",
-                "params": ["btcusdt@kline_1m"],
-                "id": 1
-              },
-            ),
-          );
-      FFAppState().chartChannel.stream.listen((message) {
-        print(message);
-        updateCandlesFromSnapshot(message);
-      });
-      var response = await callApi('BTCUSDT', widget.interval);
-      if ((response?.length > 0)) {
-        setState(() {
-          candles = mapData(response);
-        });
-      }
+      initChanel();
+      fetchData();
     });
   }
 
-  // @override
-  // void didUpdateWidget(covariant Chart oldWidget)  {
-  //   super.didUpdateWidget(oldWidget);
+  @override
+  void didUpdateWidget(covariant Chart oldWidget) {
+    print(widget.interval);
 
-  //   if(oldWidget.interval != widget.interval){
-  //      await fetchChartData()
-  //   }
-
-  // }
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.interval != widget.interval) {
+      setState(() {
+        candles = [];
+      });
+      FFAppState().chartChannel.sink.close(status.goingAway);
+      initChanel();
+      fetchData();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

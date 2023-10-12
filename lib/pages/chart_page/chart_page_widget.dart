@@ -1,9 +1,11 @@
+import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/custom_code/actions/index.dart' as actions;
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'chart_page_model.dart';
@@ -16,15 +18,59 @@ class ChartPageWidget extends StatefulWidget {
   _ChartPageWidgetState createState() => _ChartPageWidgetState();
 }
 
-class _ChartPageWidgetState extends State<ChartPageWidget> {
+class _ChartPageWidgetState extends State<ChartPageWidget>
+    with TickerProviderStateMixin {
   late ChartPageModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final animationsMap = {
+    'containerOnActionTriggerAnimation1': AnimationInfo(
+      trigger: AnimationTrigger.onActionTrigger,
+      applyInitialState: true,
+      effects: [
+        FadeEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 300.ms,
+          begin: 0.0,
+          end: 1.0,
+        ),
+      ],
+    ),
+    'containerOnActionTriggerAnimation2': AnimationInfo(
+      trigger: AnimationTrigger.onActionTrigger,
+      applyInitialState: true,
+      effects: [
+        MoveEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 600.ms,
+          begin: Offset(0.0, -100.0),
+          end: Offset(0.0, 0.0),
+        ),
+      ],
+    ),
+  };
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => ChartPageModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      setState(() {
+        _model.currentInterval = false.toString();
+      });
+    });
+
+    setupAnimations(
+      animationsMap.values.where((anim) =>
+          anim.trigger == AnimationTrigger.onActionTrigger ||
+          !anim.applyInitialState),
+      this,
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
@@ -67,143 +113,205 @@ class _ChartPageWidgetState extends State<ChartPageWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  FFButtonWidget(
-                    onPressed: () async {
-                      if (_model.currentInterval == '1m') {
-                        return;
-                      }
-
-                      setState(() {
-                        _model.currentInterval = '1m';
-                      });
-                    },
-                    text: '1m',
-                    options: FFButtonOptions(
-                      height: 24.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
-                      iconPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      color: Color(0x004B39EF),
-                      textStyle: FlutterFlowTheme.of(context)
-                          .titleSmall
-                          .override(
-                            fontFamily: 'Readex Pro',
-                            color: FlutterFlowTheme.of(context).secondaryText,
-                            fontSize: 12.0,
-                            fontWeight: FontWeight.w300,
-                          ),
-                      elevation: 0.0,
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  FFButtonWidget(
-                    onPressed: () async {
-                      if (_model.currentInterval == '1m') {
-                        return;
-                      }
-
-                      setState(() {
-                        _model.currentInterval = '15m';
-                      });
-                    },
-                    text: '15m',
-                    options: FFButtonOptions(
-                      height: 24.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
-                      iconPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      color: Color(0x004B39EF),
-                      textStyle: FlutterFlowTheme.of(context)
-                          .titleSmall
-                          .override(
-                            fontFamily: 'Readex Pro',
-                            color: FlutterFlowTheme.of(context).secondaryText,
-                            fontSize: 12.0,
-                            fontWeight: FontWeight.w300,
-                          ),
-                      elevation: 0.0,
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                  FFButtonWidget(
-                    onPressed: () async {
-                      if (_model.currentInterval == '1m') {
-                        return;
-                      }
-
-                      setState(() {
-                        _model.currentInterval = '1h';
-                      });
-                    },
-                    text: '1h',
-                    options: FFButtonOptions(
-                      height: 24.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
-                      iconPadding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                      color: Color(0x004B39EF),
-                      textStyle: FlutterFlowTheme.of(context)
-                          .titleSmall
-                          .override(
-                            fontFamily: 'Readex Pro',
-                            color: FlutterFlowTheme.of(context).secondaryText,
-                            fontSize: 12.0,
-                            fontWeight: FontWeight.w300,
-                          ),
-                      elevation: 0.0,
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                        width: 1.0,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ],
-              ),
               Container(
-                width: MediaQuery.sizeOf(context).width * 1.0,
-                height: 300.0,
-                child: custom_widgets.Chart(
-                  width: MediaQuery.sizeOf(context).width * 1.0,
-                  height: 300.0,
-                  interval: _model.currentInterval,
-                ),
-              ),
-              FFButtonWidget(
-                onPressed: () async {
-                  await actions.closeChannel();
-                },
-                text: 'Button',
-                options: FFButtonOptions(
-                  height: 40.0,
-                  padding: EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-                  iconPadding:
-                      EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
-                  color: FlutterFlowTheme.of(context).primary,
-                  textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                        fontFamily: 'Readex Pro',
-                        color: Colors.white,
-                      ),
-                  elevation: 3.0,
-                  borderSide: BorderSide(
-                    color: Colors.transparent,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).secondaryBackground,
+                  border: Border.all(
                     width: 1.0,
                   ),
-                  borderRadius: BorderRadius.circular(0.0),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    FFButtonWidget(
+                      onPressed: () async {
+                        if (_model.currentInterval == '1m') {
+                          return;
+                        }
+
+                        setState(() {
+                          _model.currentInterval = '1m';
+                        });
+                      },
+                      text: '1m',
+                      options: FFButtonOptions(
+                        height: 24.0,
+                        padding:
+                            EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
+                        iconPadding:
+                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        color: Color(0x004B39EF),
+                        textStyle: FlutterFlowTheme.of(context)
+                            .titleSmall
+                            .override(
+                              fontFamily: 'Readex Pro',
+                              color: FlutterFlowTheme.of(context).secondaryText,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w300,
+                            ),
+                        elevation: 0.0,
+                        borderSide: BorderSide(
+                          color: Colors.transparent,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    FFButtonWidget(
+                      onPressed: () async {
+                        if (_model.currentInterval == '15m') {
+                          return;
+                        }
+
+                        setState(() {
+                          _model.currentInterval = '15m';
+                        });
+                      },
+                      text: '15m',
+                      options: FFButtonOptions(
+                        height: 24.0,
+                        padding:
+                            EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
+                        iconPadding:
+                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        color: Color(0x004B39EF),
+                        textStyle: FlutterFlowTheme.of(context)
+                            .titleSmall
+                            .override(
+                              fontFamily: 'Readex Pro',
+                              color: FlutterFlowTheme.of(context).secondaryText,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w300,
+                            ),
+                        elevation: 0.0,
+                        borderSide: BorderSide(
+                          color: Colors.transparent,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    FFButtonWidget(
+                      onPressed: () async {
+                        if (_model.currentInterval == '1h') {
+                          return;
+                        }
+
+                        setState(() {
+                          _model.currentInterval = '1h';
+                        });
+                      },
+                      text: '1h',
+                      options: FFButtonOptions(
+                        height: 24.0,
+                        padding:
+                            EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
+                        iconPadding:
+                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        color: Color(0x004B39EF),
+                        textStyle: FlutterFlowTheme.of(context)
+                            .titleSmall
+                            .override(
+                              fontFamily: 'Readex Pro',
+                              color: FlutterFlowTheme.of(context).secondaryText,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w300,
+                            ),
+                        elevation: 0.0,
+                        borderSide: BorderSide(
+                          color: Colors.transparent,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                    FFButtonWidget(
+                      onPressed: () async {
+                        setState(() {
+                          _model.showIntervalsMenu = true;
+                        });
+                      },
+                      text: 'More',
+                      options: FFButtonOptions(
+                        height: 24.0,
+                        padding:
+                            EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 6.0, 0.0),
+                        iconPadding:
+                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                        color: Color(0x004B39EF),
+                        textStyle: FlutterFlowTheme.of(context)
+                            .titleSmall
+                            .override(
+                              fontFamily: 'Readex Pro',
+                              color: FlutterFlowTheme.of(context).secondaryText,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w300,
+                            ),
+                        elevation: 0.0,
+                        borderSide: BorderSide(
+                          color: Colors.transparent,
+                          width: 1.0,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: ClipRRect(
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).primaryBackground,
+                    ),
+                    child: Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: MediaQuery.sizeOf(context).width * 1.0,
+                            height: 300.0,
+                            child: custom_widgets.Chart(
+                              width: MediaQuery.sizeOf(context).width * 1.0,
+                              height: 300.0,
+                              interval: _model.currentInterval,
+                            ),
+                          ),
+                          if (_model.showIntervalsMenu == true)
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Color(0x2457636C),
+                              ),
+                              child: Align(
+                                alignment: AlignmentDirectional(0.00, -1.00),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 100.0,
+                                  decoration: BoxDecoration(
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryBackground,
+                                    shape: BoxShape.rectangle,
+                                  ),
+                                ).animateOnActionTrigger(
+                                  animationsMap[
+                                      'containerOnActionTriggerAnimation2']!,
+                                ),
+                              ),
+                            ).animateOnActionTrigger(
+                              animationsMap[
+                                  'containerOnActionTriggerAnimation1']!,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],
